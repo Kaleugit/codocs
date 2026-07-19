@@ -47,6 +47,16 @@ cd meu-projeto
 codocs generate
 ```
 
+Antes de começar, o codocs pergunta duas coisas (puladas se você usar as flags):
+
+```
+Idioma da documentação — [1] Português  [2] English (default: 1):
+Estilo do PDF — [1] Clássico  [2] Sépia estilo Kindle (default: 1):
+```
+
+- `--lang pt-BR|en` responde a primeira pergunta via flag
+- `--theme classic|kindle` responde a segunda (kindle = fundo sépia e tipografia de leitura confortável)
+
 Ou apontando para outro lugar:
 
 ```bash

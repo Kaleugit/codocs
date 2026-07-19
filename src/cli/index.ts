@@ -36,10 +36,11 @@ program
   .command('generate', { isDefault: true })
   .description('Gera a documentação de um repositório (pasta local ou URL git)')
   .argument('[repo]', 'caminho da pasta ou URL do repositório', '.')
-  .option('--lang <lang>', 'idioma da documentação (ex: pt-BR, en). Default: auto-detect')
+  .option('--lang <lang>', 'idioma da documentação (pt-BR ou en). Se ausente, será perguntado')
+  .option('--theme <theme>', 'estilo do PDF (classic ou kindle). Se ausente, será perguntado')
   .option('--out <dir>', 'diretório de saída', './codocs-output')
   .option('-y, --yes', 'pula a confirmação de estimativa', false)
-  .action(async (repo: string, opts: { lang?: string; out: string; yes: boolean }) => {
+  .action(async (repo: string, opts: { lang?: string; theme?: string; out: string; yes: boolean }) => {
     const config = await loadConfig();
     const apiKey = resolveApiKey(config);
     if (!apiKey) {
@@ -49,6 +50,26 @@ program
           'ou defina a variável de ambiente GEMINI_API_KEY.\n' +
           'Chave gratuita: https://aistudio.google.com/apikey',
       );
+      process.exit(1);
+    }
+
+    // perguntas iniciais (puladas se vierem por flag ou config)
+    let lang = opts.lang ?? config.lang;
+    let theme = opts.theme;
+    if (!lang || !theme) {
+      const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+      if (!lang) {
+        const a = await rl.question('Idioma da documentação — [1] Português  [2] English (default: 1): ');
+        lang = a.trim() === '2' ? 'en' : 'pt-BR';
+      }
+      if (!theme) {
+        const a = await rl.question('Estilo do PDF — [1] Clássico  [2] Sépia estilo Kindle (default: 1): ');
+        theme = a.trim() === '2' ? 'kindle' : 'classic';
+      }
+      rl.close();
+    }
+    if (theme !== 'classic' && theme !== 'kindle') {
+      console.error(`Tema desconhecido: ${theme}. Use: classic ou kindle`);
       process.exit(1);
     }
 
@@ -89,7 +110,6 @@ program
         }
       }
 
-      const lang = opts.lang ?? config.lang ?? detectLang(skeleton.scan.readme);
       const provider = createProvider({
         provider: config.provider ?? 'gemini',
         apiKey,
@@ -100,6 +120,7 @@ program
       const outDir = path.resolve(opts.out);
       const result = await generate(prepared, provider, {
         lang,
+        theme,
         outDir,
         onProgress: (msg) => (spinner.text = msg),
       });
@@ -114,12 +135,5 @@ program
       if (tempDir) await fs.rm(tempDir, { recursive: true, force: true }).catch(() => {});
     }
   });
-
-function detectLang(readme: string | null): string {
-  if (!readme) return 'en';
-  const ptSignals = /\b(uma|não|são|função|configuração|para|como usar|instalação|exemplo)\b/gi;
-  const matches = readme.match(ptSignals)?.length ?? 0;
-  return matches >= 5 ? 'pt-BR' : 'en';
-}
 
 program.parseAsync();

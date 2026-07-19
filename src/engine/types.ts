@@ -86,8 +86,11 @@ export interface DocBundle {
   diagrams: Record<string, string>;
 }
 
+export type PdfTheme = 'classic' | 'kindle';
+
 export interface GenerateOptions {
   lang: string; // ex: "pt-BR", "en"
+  theme: PdfTheme;
   outDir: string;
   onProgress?: (msg: string) => void;
 }

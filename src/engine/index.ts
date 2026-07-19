@@ -53,7 +53,7 @@ export async function generate(
   await writeMarkdownFiles(opts.outDir, docs);
 
   const pdfPath = path.join(opts.outDir, `${skeleton.scan.name}-docs.pdf`);
-  await renderPdf(docs.fullMarkdown, { 'module-graph': moduleGraph }, pdfPath, opts.onProgress);
+  await renderPdf(docs.fullMarkdown, { 'module-graph': moduleGraph }, pdfPath, opts.theme, opts.onProgress);
 
   return { pdfPath, docsDir: path.join(opts.outDir, 'docs') };
 }

@@ -6,40 +6,66 @@ import puppeteer from 'puppeteer';
 
 const require = createRequire(import.meta.url);
 
-const PRINT_CSS = `
+const BASE_CSS = `
   @page { size: A4; margin: 22mm 18mm; }
   * { box-sizing: border-box; }
-  body {
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 11pt; line-height: 1.55; color: #1a1a2e;
-    max-width: 100%;
-  }
-  h1 { font-size: 22pt; border-bottom: 2px solid #1a1a2e; padding-bottom: 6pt; margin-top: 0; }
-  h2 { font-size: 15pt; margin-top: 18pt; color: #16213e; }
-  h3 { font-size: 12.5pt; color: #16213e; }
+  body { font-size: 11pt; line-height: 1.55; max-width: 100%; }
+  h1 { font-size: 22pt; padding-bottom: 6pt; margin-top: 0; }
+  h2 { font-size: 15pt; margin-top: 18pt; }
+  h3 { font-size: 12.5pt; }
   code, pre { font-family: 'Consolas', 'Courier New', monospace; font-size: 9pt; }
   pre {
-    background: #f4f6f8; border: 1px solid #dde3ea; border-radius: 4px;
-    padding: 10px; overflow-x: hidden; white-space: pre-wrap; word-wrap: break-word;
+    border-radius: 4px; padding: 10px;
+    overflow-x: hidden; white-space: pre-wrap; word-wrap: break-word;
   }
-  code { background: #f4f6f8; padding: 1px 4px; border-radius: 3px; }
+  code { padding: 1px 4px; border-radius: 3px; }
   pre code { background: none; padding: 0; }
-  blockquote { border-left: 3px solid #4a5568; margin-left: 0; padding-left: 12px; color: #4a5568; font-style: italic; }
+  blockquote { margin-left: 0; padding-left: 12px; font-style: italic; }
   table { border-collapse: collapse; width: 100%; font-size: 10pt; }
-  th, td { border: 1px solid #cbd5e0; padding: 5px 8px; text-align: left; }
-  th { background: #eef2f7; }
+  th, td { padding: 5px 8px; text-align: left; }
   svg { max-width: 100%; height: auto; }
   .diagram { text-align: center; margin: 14pt 0; }
   .page-break { page-break-after: always; }
   .mermaid { text-align: center; }
 `;
 
+const THEMES: Record<string, string> = {
+  classic: `
+    body { font-family: Georgia, 'Times New Roman', serif; color: #1a1a2e; }
+    h1 { border-bottom: 2px solid #1a1a2e; }
+    h2, h3 { color: #16213e; }
+    pre, code { background: #f4f6f8; }
+    pre { border: 1px solid #dde3ea; }
+    blockquote { border-left: 3px solid #4a5568; color: #4a5568; }
+    th, td { border: 1px solid #cbd5e0; }
+    th { background: #eef2f7; }
+  `,
+  // leitura confortável estilo e-reader: fundo sépia, tipografia serifada quente
+  kindle: `
+    html, body { background: #f7f1e3; }
+    body {
+      font-family: 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+      color: #3e3226; line-height: 1.7; font-size: 11.5pt;
+    }
+    h1 { border-bottom: 1px solid #c9b899; color: #2f2619; font-weight: normal; letter-spacing: 0.5px; }
+    h2, h3 { color: #4a3b28; font-weight: normal; }
+    pre, code { background: #efe6d0; color: #43362a; }
+    pre { border: 1px solid #d8c9a8; }
+    blockquote { border-left: 3px solid #b09a72; color: #6b5a44; }
+    th, td { border: 1px solid #d8c9a8; }
+    th { background: #efe6d0; }
+    a { color: #6b5133; }
+  `,
+};
+
 export async function renderPdf(
   fullMarkdown: string,
   diagrams: Record<string, string>,
   outPdfPath: string,
+  theme: string = 'classic',
   onProgress?: (msg: string) => void,
 ): Promise<void> {
+  const css = BASE_CSS + (THEMES[theme] ?? THEMES.classic);
   let html = await marked.parse(fullMarkdown);
 
   // injeta diagramas SVG determinísticos nos placeholders
@@ -54,7 +80,7 @@ export async function renderPdf(
 
   const page_ = `<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><style>${PRINT_CSS}</style></head>
+<head><meta charset="utf-8"><style>${css}</style></head>
 <body>
 ${html}
 <script>${mermaidJs}</script>
