@@ -9,7 +9,8 @@
       "Bash(git commit *)",
       "Bash(node --input-type=module -e ' *)",
       "Bash(node *)",
-      "Bash(npm uninstall *)"
+      "Bash(npm uninstall *)",
+      "Bash(curl -s \"https://generativelanguage.googleapis.com/v1beta/models?key=$\\(node -e \"console.log\\(JSON.parse\\(require\\('fs'\\).readFileSync\\(require\\('os'\\).homedir\\(\\)+'/.codocs/config.json'\\)\\).apiKey\\)\"\\)\")"
     ]
   }
 }

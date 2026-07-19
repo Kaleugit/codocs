@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import type { LLMProvider } from '../types.js';
 
-const DEFAULT_MODEL = 'gemini-2.0-flash';
+const DEFAULT_MODEL = 'gemini-flash-latest';
 // free tier: margem conservadora de requests por minuto
 const MIN_INTERVAL_MS = 6500;
 
