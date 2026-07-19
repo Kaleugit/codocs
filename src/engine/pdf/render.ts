@@ -41,8 +41,11 @@ const THEMES: Record<string, string> = {
     th { background: #eef2f7; }
   `,
   // leitura confortável estilo e-reader: fundo sépia, tipografia serifada quente
+  // @page sem margem: o fundo sépia cobre a folha inteira; o respiro vem do padding do body
   kindle: `
-    html, body { background: #f7f1e3; }
+    @page { margin: 0; }
+    html, body { background: #f7f1e3; margin: 0; }
+    body { padding: 22mm 18mm; }
     body {
       font-family: 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
       color: #3e3226; line-height: 1.7; font-size: 11.5pt;
@@ -122,7 +125,8 @@ ${html}
       path: outPdfPath,
       format: 'A4',
       printBackground: true,
-      displayHeaderFooter: true,
+      // no tema kindle a margem da @page é 0, então header/footer cairiam sobre o conteúdo
+      displayHeaderFooter: theme !== 'kindle',
       headerTemplate: '<span></span>',
       footerTemplate:
         '<div style="width:100%;text-align:center;font-size:8pt;color:#888;">' +
