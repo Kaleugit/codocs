@@ -53,6 +53,8 @@ export interface Hotspot {
 }
 
 export interface GitInsights {
+  /** Nome do repositório derivado do remote origin, se existir */
+  repoName: string | null;
   commitHash: string | null;
   totalCommits: number;
   hotspots: Hotspot[];

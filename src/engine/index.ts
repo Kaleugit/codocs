@@ -27,6 +27,7 @@ export async function prepare(rootDir: string, onProgress?: (msg: string) => voi
 
   onProgress?.('analisando histórico Git');
   const git = await analyzeGitHistory(rootDir);
+  if (git.repoName) scan.name = git.repoName;
 
   onProgress?.('montando esqueleto (análise estática)');
   const skeleton = await buildSkeleton(scan, git, onProgress);

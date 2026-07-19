@@ -69,10 +69,6 @@ program
       spinner.start('analisando repositório');
       const prepared = await prepare(rootDir, (msg) => (spinner.text = msg));
       const { skeleton } = prepared;
-      if (tempDir) {
-        const urlName = repo.replace(/\/+$/, '').split('/').pop()?.replace(/\.git$/, '');
-        if (urlName) skeleton.scan.name = urlName;
-      }
       spinner.succeed(
         `análise concluída: ${skeleton.scan.files.length} arquivos, ` +
           `${skeleton.modules.length} módulos, ` +

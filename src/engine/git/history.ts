@@ -2,6 +2,7 @@ import { simpleGit } from 'simple-git';
 import type { GitInsights, Hotspot } from '../types.js';
 
 const EMPTY: GitInsights = {
+  repoName: null,
   commitHash: null,
   totalCommits: 0,
   hotspots: [],
@@ -33,7 +34,14 @@ export async function analyzeGitHistory(rootDir: string): Promise<GitInsights> {
     .sort((a, b) => b.commits - a.commits)
     .slice(0, 100);
 
+  const remotes = await git.getRemotes(true).catch(() => []);
+  const originUrl = remotes.find((r) => r.name === 'origin')?.refs.fetch ?? null;
+  const repoName = originUrl
+    ? originUrl.replace(/\/+$/, '').split('/').pop()?.replace(/\.git$/, '') ?? null
+    : null;
+
   return {
+    repoName,
     commitHash: log.latest?.hash ?? null,
     totalCommits: log.total,
     hotspots,

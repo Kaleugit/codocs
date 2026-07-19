@@ -32,25 +32,42 @@ export function assembleDocs(skeleton: Skeleton, bundle: DocBundle): AssembledDo
   const stats = buildStats(skeleton);
 
   const markdownFiles: Record<string, string> = {
-    'eli5.md': `# Explique como se eu tivesse cinco anos\n\n${bundle.eli5}`,
-    'arquitetura.md': `# Visão Geral da Arquitetura\n\n${bundle.architecture}\n\n## Grafo de módulos\n\n<!--diagram:module-graph-->`,
-    'fluxos.md': `# Fluxos Principais\n\n${bundle.flows}`,
+    'eli5.md': `# ELI5\n\n${stripLeadingHeading(bundle.eli5, 'eli5')}`,
+    'onboarding.md': `# Guia de Onboarding\n\n${stripLeadingHeading(bundle.onboarding, 'onboarding')}`,
+    'arquitetura.md': `# Visão Geral da Arquitetura\n\n${stripLeadingHeading(bundle.architecture, 'arquitetura')}\n\n## Grafo de módulos\n\n<!--diagram:module-graph-->`,
+    'fluxos.md': `# Fluxos Principais\n\n${stripLeadingHeading(bundle.flows, 'fluxos')}`,
     'modulos.md': `# Módulos\n\n${modulesMd}`,
-    'onboarding.md': `# Guia de Onboarding\n\n${bundle.onboarding}`,
     'apendice.md': `# Apêndice\n\n${stats}`,
   };
 
   const fullMarkdown = [
     cover,
     markdownFiles['eli5.md'],
+    markdownFiles['onboarding.md'],
     markdownFiles['arquitetura.md'],
     markdownFiles['fluxos.md'],
     markdownFiles['modulos.md'],
-    markdownFiles['onboarding.md'],
     markdownFiles['apendice.md'],
   ].join('\n\n<div class="page-break"></div>\n\n');
 
   return { markdownFiles, fullMarkdown };
+}
+
+const SECTION_TITLE_HINTS: Record<string, RegExp> = {
+  eli5: /eli.?5|cinco anos|five/i,
+  onboarding: /onboarding|guia/i,
+  arquitetura: /arquitetura|architecture|vis[aã]o/i,
+  fluxos: /fluxos|flows/i,
+};
+
+/** Remove título duplicado no início da resposta do LLM (a seção já tem título fixo) */
+function stripLeadingHeading(content: string, section: string): string {
+  const trimmed = content.trim();
+  const match = trimmed.match(/^#{1,3}\s+(.+)\n+/);
+  if (!match) return trimmed;
+  const hint = SECTION_TITLE_HINTS[section];
+  if (hint && !hint.test(match[1])) return trimmed;
+  return trimmed.slice(match[0].length).trim();
 }
 
 function buildStats(skeleton: Skeleton): string {

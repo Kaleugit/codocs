@@ -106,11 +106,10 @@ export function flowsPrompt(skeletonText: string, moduleSummaries: string): stri
 
 export function eli5Prompt(skeletonText: string, architecture: string): string {
   return [
-    'Escreva a seção "Explique como se eu tivesse cinco anos (ELI5)" da documentação deste sistema:',
-    '- 2-3 parágrafos em linguagem simples, sem jargão, explicando o que o sistema faz e por que existe.',
-    '- Use UMA metáfora central do mundo real para explicar a arquitetura.',
-    '- Termine com uma lista curta "Em uma frase: ..." resumindo tudo.',
-    'Baseie-se apenas nos fatos abaixo.',
+    'Escreva a seção "ELI5" da documentação deste sistema:',
+    '- 2-3 parágrafos em linguagem simples e direta, sem jargão e sem metáforas, explicando o que o sistema faz, por que existe e como as partes se conectam.',
+    '- Termine com uma linha "Em uma frase: ..." resumindo tudo.',
+    'Baseie-se apenas nos fatos abaixo. Não inclua título — comece direto no primeiro parágrafo.',
     '',
     skeletonText,
     '',
