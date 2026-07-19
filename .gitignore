@@ -3,3 +3,4 @@ dist/
 codocs-output/
 .env
 *.log
+.claude/settings.local.json
