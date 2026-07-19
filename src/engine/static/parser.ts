@@ -48,7 +48,7 @@ async function loadLanguage(lang: string): Promise<Language | null> {
   const cached = languageCache.get(lang);
   if (cached) return cached;
   try {
-    const wasmPath = require.resolve(`tree-sitter-wasms/out/tree-sitter-${lang}.wasm`);
+    const wasmPath = require.resolve(`@vscode/tree-sitter-wasm/wasm/tree-sitter-${lang}.wasm`);
     const language = await Language.load(wasmPath);
     languageCache.set(lang, language);
     return language;

@@ -13,18 +13,14 @@ const EXT_TO_LANGUAGE: Record<string, string> = {
   '.java': 'java',
   '.rb': 'ruby',
   '.php': 'php',
-  '.c': 'c',
-  '.h': 'c',
+  // grammar de C++ cobre C no nível de extração usado aqui
+  '.c': 'cpp',
+  '.h': 'cpp',
   '.cpp': 'cpp',
   '.cc': 'cpp',
   '.hpp': 'cpp',
-  '.cs': 'c_sharp',
-  '.kt': 'kotlin',
-  '.swift': 'swift',
-  '.scala': 'scala',
-  '.lua': 'lua',
-  '.ex': 'elixir',
-  '.exs': 'elixir',
+  '.cs': 'c-sharp',
+  '.sh': 'bash',
 };
 
 export function detectLanguage(filePath: string): string | null {
