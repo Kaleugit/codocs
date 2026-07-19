@@ -15,6 +15,8 @@ export function assembleDocs(skeleton: Skeleton, bundle: DocBundle): AssembledDo
   const hash = skeleton.commitHash ? skeleton.commitHash.slice(0, 10) : 'sem-git';
 
   const cover = [
+    '<!--codocs-logo-->',
+    '',
     `# ${scan.name}`,
     '',
     `**Documentação técnica gerada por codocs**`,

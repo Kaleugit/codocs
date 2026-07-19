@@ -47,7 +47,7 @@ export async function generate(
   const bundle = await summarize(skeleton, git, provider, opts.lang, opts.onProgress);
 
   opts.onProgress?.('gerando grafo de módulos');
-  const moduleGraph = await renderModuleGraph(skeleton);
+  const moduleGraph = await renderModuleGraph(skeleton, opts.theme);
 
   const docs = assembleDocs(skeleton, { ...bundle, diagrams: { 'module-graph': moduleGraph } });
   await writeMarkdownFiles(opts.outDir, docs);

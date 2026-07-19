@@ -1,5 +1,6 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { marked } from 'marked';
 import puppeteer from 'puppeteer';
@@ -24,6 +25,8 @@ const BASE_CSS = `
   table { border-collapse: collapse; width: 100%; font-size: 10pt; }
   th, td { padding: 5px 8px; text-align: left; }
   svg { max-width: 100%; height: auto; }
+  /* multiply funde o fundo branco do PNG com o fundo da página (essencial no tema sépia) */
+  .cover-logo { display: block; margin: 0 auto 20pt; max-width: 55mm; mix-blend-mode: multiply; }
   .diagram { text-align: center; margin: 14pt 0; }
   .page-break { page-break-after: always; }
   .mermaid { text-align: center; }
@@ -75,6 +78,14 @@ export async function renderPdf(
   for (const [name, svg] of Object.entries(diagrams)) {
     html = html.replace(`<!--diagram:${name}-->`, `<div class="diagram">${svg}</div>`);
   }
+
+  // logo da codocs na capa (empacotado na raiz do pacote)
+  const logoPath = path.resolve(fileURLToPath(import.meta.url), '../../../../codocs-logo.png');
+  const logoB64 = await fs.readFile(logoPath, 'base64');
+  html = html.replace(
+    '<!--codocs-logo-->',
+    `<img class="cover-logo" src="data:image/png;base64,${logoB64}" alt="codocs">`,
+  );
 
   const mermaidJs = await fs.readFile(
     require.resolve('mermaid/dist/mermaid.min.js'),
