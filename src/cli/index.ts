@@ -60,7 +60,8 @@ program
       if (/^(https?:\/\/|git@)/.test(repo)) {
         tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'codocs-'));
         spinner.start(`clonando ${repo}`);
-        await simpleGit().clone(repo, tempDir, ['--depth', '500']);
+        // core.longpaths evita falha no Windows com nomes de arquivo muito longos
+        await simpleGit().clone(repo, tempDir, ['--depth', '500', '-c', 'core.longpaths=true']);
         spinner.succeed('repositório clonado');
         rootDir = tempDir;
       }
@@ -68,6 +69,10 @@ program
       spinner.start('analisando repositório');
       const prepared = await prepare(rootDir, (msg) => (spinner.text = msg));
       const { skeleton } = prepared;
+      if (tempDir) {
+        const urlName = repo.replace(/\/+$/, '').split('/').pop()?.replace(/\.git$/, '');
+        if (urlName) skeleton.scan.name = urlName;
+      }
       spinner.succeed(
         `análise concluída: ${skeleton.scan.files.length} arquivos, ` +
           `${skeleton.modules.length} módulos, ` +
