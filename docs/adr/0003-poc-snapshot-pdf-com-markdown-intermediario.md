@@ -1,0 +1,3 @@
+# POC gera snapshot PDF, com Markdown intermediário
+
+A visão de longo prazo é Documentação Viva: Markdown versionado no repositório como fonte da verdade, atualizado incrementalmente. Para o POC, porém, o entregável é um snapshot PDF estático — a maioria das empresas atualiza documentação manualmente, então um PDF bem-feito gerado sob demanda já supera o status quo, e valida a única hipótese que importa ("a documentação gerada é boa?") sem construir infra de atualização incremental. O PDF é renderizado a partir de arquivos Markdown intermediários (via HTML/CSS no Chromium), que ficam no output justamente para plantar a semente da documentação viva sem retrabalho futuro.
